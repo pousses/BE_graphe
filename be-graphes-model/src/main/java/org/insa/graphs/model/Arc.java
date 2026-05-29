@@ -15,7 +15,7 @@ import java.util.List;
  * {@link ArcBackward} classes.
  * </p>
  */
-public abstract class Arc {
+public abstract class  Arc {
 
     /**
      * @return Origin node of this arc.

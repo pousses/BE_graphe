@@ -5,17 +5,28 @@ import java.awt.Dimension;
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.FileInputStream;
+import java.util.List;
 
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
+import org.apache.tools.ant.taskdefs.Pack;
+import org.insa.graphs.algorithm.ArcInspector;
+import org.insa.graphs.algorithm.shortestpath.DijkstraAlgorithm;
+import org.insa.graphs.algorithm.shortestpath.ShortestPathData;
 import org.insa.graphs.gui.drawing.Drawing;
 import org.insa.graphs.gui.drawing.components.BasicDrawing;
 import org.insa.graphs.model.Graph;
 import org.insa.graphs.model.Path;
+import org.insa.graphs.model.Node;
 import org.insa.graphs.model.io.BinaryGraphReader;
+import org.insa.graphs.model.io.BinaryPathReader;
 import org.insa.graphs.model.io.GraphReader;
 import org.insa.graphs.model.io.PathReader;
+import org.insa.graphs.algorithm.ArcInspectorFactory;
+import org.insa.graphs.algorithm.shortestpath.AStarAlgorithm;
+import org.insa.graphs.algorithm.shortestpath.ShortestPathSolution;
+
 
 public class Launch {
 
@@ -43,37 +54,148 @@ public class Launch {
     }
 
     public static void main(String[] args) throws Exception {
+        
+        List<ArcInspector> a = ArcInspectorFactory.getAllFilters();
+        final ArcInspector[] arctype = {a.get(0),a.get(1),a.get(2),a.get(3)}; 
+       
+        Graph graph;
+        Path path;
+        ShortestPathSolution path_teste;
+        DijkstraAlgorithm algo_teste;
 
-        // visit these directory to see the list of available files on commetud.
-        final String mapName =
-                "/mnt/commetud/3eme Annee MIC/Graphes-et-Algorithmes/Maps/insa.mapgr";
-        final String pathName =
-                "/mnt/commetud/3eme Annee MIC/Graphes-et-Algorithmes/Paths/path_fr31insa_rangueil_r2.path";
 
-        final Graph graph;
-        final Path path;
-
-        // create a graph reader
-        try (final GraphReader reader = new BinaryGraphReader(new DataInputStream(
-                new BufferedInputStream(new FileInputStream(mapName))))) {
-
-            // TODO: read the graph
-            graph = null;
+        //teste 0: facile
+        try (GraphReader reader = new BinaryGraphReader(new DataInputStream(
+                new BufferedInputStream(new FileInputStream("/mnt/commetud/3eme Annee MIC/Graphes-et-Algorithmes/Maps/insa.mapgr"))))) {
+            graph = reader.read();
         }
 
-        // create the drawing
-        final Drawing drawing = createDrawing();
-
-        // TODO: draw the graph on the drawing
-
-        // TODO: create a path reader
-        try (final PathReader pathReader = null) {
-
-            // TODO: read the path
-            path = null;
+         try (PathReader pathReader = new BinaryPathReader(new DataInputStream(
+            new BufferedInputStream(new FileInputStream("/mnt/commetud/3eme Annee MIC/Graphes-et-Algorithmes/Paths/path_fr31insa_rangueil_r2.path"))))) {
+            path = pathReader.readPath(graph);
         }
 
-        // TODO: draw the path on the drawing
+        algo_teste = new AStarAlgorithm(new ShortestPathData(graph, path.getOrigin(), path.getDestination(), arctype[0]));
+        path_teste = algo_teste.run();
+        System.out.print("teste0 : ");
+        if(!path_teste.isFeasible()){
+            System.out.println("echoué: chemin nom fesable");
+        }
+        else if (path_teste.getPath() == null) {
+            System.out.println("echoué: chemin null");
+        }
+        else if (!path_teste.getPath().isValid()) {
+            System.out.println("echoué: chemin non valide");
+        }
+        else if (Double.compare(path.getLength(), path_teste.getPath().getLength())==0){
+            System.out.println("validé!");
+        }
+        else{
+            System.out.println("echoué: pas la bonne distance, "+path_teste.getPath().getLength()+"au lieu de "+path.getLength());
+        }
+
+        //teste 1: longueur
+        try (GraphReader reader = new BinaryGraphReader(new DataInputStream(
+                new BufferedInputStream(new FileInputStream("/mnt/commetud/3eme Annee MIC/Graphes-et-Algorithmes/Maps/haute-garonne.mapgr"))))) {
+            graph = reader.read();
+        }
+
+         try (PathReader pathReader = new BinaryPathReader(new DataInputStream(
+            new BufferedInputStream(new FileInputStream("/mnt/commetud/3eme Annee MIC/Graphes-et-Algorithmes/Paths/path_fr31_insa_aeroport_length.path"))))) {
+            path = pathReader.readPath(graph);
+        }
+
+        algo_teste = new AStarAlgorithm(new ShortestPathData(graph, path.getOrigin(), path.getDestination(), arctype[1]));
+        path_teste = algo_teste.run();
+        System.out.print("teste1 : ");
+        if(!path_teste.isFeasible()){
+            System.out.println("echoué: chemin nom fesable");
+        }
+        else if (path_teste.getPath() == null) {
+            System.out.println("echoué: chemin null");
+        }
+        else if (!path_teste.getPath().isValid()) {
+            System.out.println("echoué: chemin non valide");
+        }
+        else if (Double.compare(path.getLength(), path_teste.getPath().getLength())==0){
+            System.out.println("validé!");
+        }
+        else{
+            System.out.println("echoué: pas la bonne distance, "+path_teste.getPath().getLength()+"au lieu de "+path.getLength());
+        }
+
+        //teste 2: temps
+        try (GraphReader reader = new BinaryGraphReader(new DataInputStream(
+                new BufferedInputStream(new FileInputStream("/mnt/commetud/3eme Annee MIC/Graphes-et-Algorithmes/Maps/haute-garonne.mapgr"))))) {
+            graph = reader.read();
+        }
+
+         try (PathReader pathReader = new BinaryPathReader(new DataInputStream(
+            new BufferedInputStream(new FileInputStream("/mnt/commetud/3eme Annee MIC/Graphes-et-Algorithmes/Paths/path_fr31_insa_aeroport_time.path"))))) {
+            path = pathReader.readPath(graph);
+        }
+
+        algo_teste = new AStarAlgorithm(new ShortestPathData(graph, path.getOrigin(), path.getDestination(), arctype[2]));
+        path_teste = algo_teste.run();
+        System.out.print("teste2 : ");
+        if(!path_teste.isFeasible()){
+            System.out.println("echoué: chemin nom fesable");
+        }
+        else if (path_teste.getPath() == null) {
+            System.out.println("echoué: chemin null");
+        }
+        else if (!path_teste.getPath().isValid()) {
+            System.out.println("echoué: chemin non valide");
+        }
+        else if (Double.compare(path.getMinimumTravelTime(), path_teste.getPath().getMinimumTravelTime())==0){
+            System.out.println("validé!");
+        }
+        else{
+            System.out.println("echoué: pas le bon temps de parcours, "+path_teste.getPath().getMinimumTravelTime()+"au lieu de "+path.getMinimumTravelTime());
+        }
+
+        //teste 3: impossible
+        try (GraphReader reader = new BinaryGraphReader(new DataInputStream(
+                new BufferedInputStream(new FileInputStream("/mnt/commetud/3eme Annee MIC/Graphes-et-Algorithmes/Maps/bretagne.mapgr"))))) {
+            graph = reader.read();
+        }
+
+        algo_teste = new AStarAlgorithm(new ShortestPathData(graph, graph.get(423945),graph.get(120622), arctype[0]));
+        path_teste = algo_teste.run();
+        System.out.print("teste3 : ");
+        if(!path_teste.isFeasible()){
+            System.out.println("validé!");
+        }
+        else {
+            System.out.println("echoué: chemin null");
+        }
+
+        //teste 4: origine=dest
+        try (GraphReader reader = new BinaryGraphReader(new DataInputStream(
+                new BufferedInputStream(new FileInputStream("/mnt/commetud/3eme Annee MIC/Graphes-et-Algorithmes/Maps/insa.mapgr"))))) {
+            graph = reader.read();
+        }
+
+        algo_teste = new AStarAlgorithm(new ShortestPathData(graph, graph.get(1), graph.get(1), arctype[0]));
+        path_teste = algo_teste.run();
+        System.out.print("teste4 : ");
+        if(!path_teste.isFeasible()){
+            System.out.println("echoué: chemin nom fesable");
+        }
+        else if (path_teste.getPath() == null) {
+            System.out.println("echoué: chemin null");
+        }
+        else if (!path_teste.getPath().isValid()) {
+            System.out.println("echoué: chemin non valide");
+        }
+        else if (path_teste.getPath().isEmpty()){
+            System.out.println("validé!");
+        }
+        else{
+            System.out.println("echoué: le chemin n'est pas le chemin vide");
+        }
+
+        
     }
 
 }
