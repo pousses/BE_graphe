@@ -247,7 +247,7 @@ public class Launch {
         
         System.out.println("fin Dijkstra = ");
 
-        System.out.print("teste5, Dijkstra /A*: ");
+        System.out.print("teste6, Dijkstra /A*: ");
         if(!path_teste.isFeasible()){
             System.out.println("echoué: chemin nom fesable");
         }
