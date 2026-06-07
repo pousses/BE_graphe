@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.FileInputStream;
+import java.time.Clock;
 import java.util.List;
 
 import javax.swing.JFrame;
@@ -25,6 +26,7 @@ import org.insa.graphs.model.io.GraphReader;
 import org.insa.graphs.model.io.PathReader;
 import org.insa.graphs.algorithm.ArcInspectorFactory;
 import org.insa.graphs.algorithm.shortestpath.AStarAlgorithm;
+import org.insa.graphs.algorithm.shortestpath.ShortestPathAlgorithm;
 import org.insa.graphs.algorithm.shortestpath.ShortestPathSolution;
 
 
@@ -194,6 +196,74 @@ public class Launch {
         else{
             System.out.println("echoué: le chemin n'est pas le chemin vide");
         }
+
+
+        //teste 5: A* contre Dijkstra longueur
+        try (GraphReader reader = new BinaryGraphReader(new DataInputStream(
+                new BufferedInputStream(new FileInputStream("/mnt/commetud/3eme Annee MIC/Graphes-et-Algorithmes/Maps/insa.mapgr"))))) {
+            graph = reader.read();
+        }
+
+        algo_teste = new AStarAlgorithm(new ShortestPathData(graph, graph.get(756), graph.get(155), arctype[0]));
+        path_teste = algo_teste.run();
+
+        ShortestPathAlgorithm algo_teste_2 = new AStarAlgorithm(new ShortestPathData(graph, graph.get(756), graph.get(155), arctype[0]));
+        ShortestPathSolution path_teste_2 = algo_teste_2.run();
+
+
+        System.out.print("\nteste5, Dijkstra /A*: ");
+        if(!path_teste.isFeasible()){
+            System.out.println("echoué: chemin nom fesable");
+        }
+        else if (path_teste.getPath() == null) {
+            System.out.println("echoué: chemin null");
+        }
+        else if (!path_teste.getPath().isValid()) {
+            System.out.println("echoué: chemin non valide");
+        }
+        else if (Double.compare(path_teste_2.getPath().getLength(), path_teste.getPath().getLength())==0){
+            System.out.println("validé!");
+        }
+        else{
+            System.out.println("echoué: pas la bonne distance, A* = "+path_teste.getPath().getLength()+"au lieu de Dijkstra = "+path_teste_2.getPath().getLength());
+        }
+
+        //teste 6: A* contre Dijkstra temps + teste de 
+        try (GraphReader reader = new BinaryGraphReader(new DataInputStream(
+                new BufferedInputStream(new FileInputStream("/mnt/commetud/3eme Annee MIC/Graphes-et-Algorithmes/Maps/bretagne.mapgr"))))) {
+            graph = reader.read();
+        }
+
+        System.out.println("debut\n ");
+        algo_teste = new AStarAlgorithm(new ShortestPathData(graph, graph.get(36415), graph.get(15448), arctype[2]));
+      
+        path_teste = algo_teste.run();
+        System.out.println("fin A*");
+
+        
+        algo_teste_2 = new AStarAlgorithm(new ShortestPathData(graph, graph.get(36415), graph.get(15448), arctype[2]));
+
+        path_teste_2 = algo_teste_2.run();
+        
+        System.out.println("fin Dijkstra = ");
+
+        System.out.print("teste5, Dijkstra /A*: ");
+        if(!path_teste.isFeasible()){
+            System.out.println("echoué: chemin nom fesable");
+        }
+        else if (path_teste.getPath() == null) {
+            System.out.println("echoué: chemin null");
+        }
+        else if (!path_teste.getPath().isValid()) {
+            System.out.println("echoué: chemin non valide");
+        }
+        else if (Double.compare(path_teste_2.getPath().getMinimumTravelTime(), path_teste.getPath().getMinimumTravelTime())==0){
+            System.out.println("validé!");
+        }
+        else{
+            System.out.println("echoué: pas le bon temps, A* = "+path_teste.getPath().getMinimumTravelTime()+"au lieu de Dijkstra = "+path_teste_2.getPath().getMinimumTravelTime());
+        }
+
 
         
     }

@@ -11,27 +11,16 @@ public class Label_star extends Label_dijsktra{
         this.cout_estimer = cout_estimer;
     }
 
-
+    @Override
+    public double getcout_estimer(){
+        return this.cout_estimer;
+    }
 
 
     @Override
     public double getcost(){
         return this.getcout_realiser()+cout_estimer;
     }
-
-    /*
-    @Override
-    public int compareTo(Label_dijsktra autre){
-        if (this.getcost()>autre.getcost()){
-            return 1;
-        }
-        else if (this.getcost()<autre.getcost()){
-            return -1;
-        } 
-        else if (this.get) {
-            
-        }
-    }*/
 
 
 }

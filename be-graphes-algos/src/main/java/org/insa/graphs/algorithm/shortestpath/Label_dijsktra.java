@@ -53,14 +53,27 @@ public class Label_dijsktra implements Comparable<Label_dijsktra>{
     }
 
 
+    public double getcout_estimer(){//inutile normalement dans la class mère
+        return 0;
+    }
+
+
+
+
 
     public int compareTo(Label_dijsktra autre){
         if (this.getcost()>autre.getcost()){
             return 1;
         }
-        else{
+        else if (this.getcost()<autre.getcost()){
             return -1;
         } 
+        else if (this.getcout_estimer() > autre.getcout_estimer() ) {
+            return 1;
+        }
+        else{
+            return -1;
+        }
     }
 
     public String toString(){
